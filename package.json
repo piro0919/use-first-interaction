@@ -76,6 +76,6 @@
   },
   "homepage": "https://use-first-interaction.kkweb.io/",
   "peerDependencies": {
-    "react": ">=18"
+    "react": ">=18.3.1"
   }
 }
