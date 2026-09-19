@@ -42,7 +42,7 @@
     "url": "https://github.com/piro0919/use-first-interaction/issues"
   },
   "author": "piro0919 <piro.haniwa@gmail.com> (https://kkweb.io/)",
-  "packageManager": "pnpm@11.27.0",
+  "packageManager": "pnpm@12.4.2",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -64,7 +64,7 @@
     "@types/react-dom": "^19.3.0",
     "@vercel/analytics": "^2.0.1",
     "babel-plugin-react-compiler": "^1.0.0",
-    "jsdom": "^26.1.0",
+    "jsdom": "^30.0.1",
     "lefthook": "^2.1.14",
     "next": "16.3.5",
     "react": "19.3.0",
@@ -72,7 +72,7 @@
     "tailwindcss": "^4.3.3",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
-    "vitest": "^3.2.7"
+    "vitest": "^5.0.1"
   },
   "homepage": "https://use-first-interaction.kkweb.io/",
   "peerDependencies": {
