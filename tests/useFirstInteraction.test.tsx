@@ -81,14 +81,63 @@ describe("useFirstInteraction", () => {
     }
   });
 
-  it("listens passively, so a scroll listener cannot hold up the scroll", () => {
+  it("listens passively and in the capture phase", () => {
     const add = vi.spyOn(window, "addEventListener");
 
     renderHook(() => useFirstInteraction());
 
+    expect(add).toHaveBeenCalled();
+
     for (const call of add.mock.calls) {
-      expect(call[2]).toEqual({ passive: true });
+      expect(call[2]).toEqual({ capture: true, passive: true });
     }
+  });
+
+  it("removes the capture-phase listeners it added", () => {
+    const remove = vi.spyOn(window, "removeEventListener");
+
+    renderHook(() => useFirstInteraction());
+
+    interact();
+
+    expect(remove).toHaveBeenCalled();
+
+    for (const call of remove.mock.calls) {
+      expect(call[2]).toEqual({ capture: true });
+    }
+  });
+
+  it("hears a scroll on an inner element, which does not bubble", () => {
+    const box = document.createElement("div");
+
+    document.body.append(box);
+
+    const { result } = renderHook(() => useFirstInteraction());
+
+    act(() => {
+      box.dispatchEvent(new Event("scroll", { bubbles: false }));
+    });
+
+    expect(result.current).toBe(true);
+
+    box.remove();
+  });
+
+  it("hears an event whose propagation was stopped", () => {
+    const button = document.createElement("button");
+
+    button.addEventListener("pointerdown", (event) => event.stopPropagation());
+    document.body.append(button);
+
+    const { result } = renderHook(() => useFirstInteraction());
+
+    act(() => {
+      button.dispatchEvent(new Event("pointerdown", { bubbles: true }));
+    });
+
+    expect(result.current).toBe(true);
+
+    button.remove();
   });
 
   it("reports nothing when disabled", () => {

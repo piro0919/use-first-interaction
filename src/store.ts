@@ -19,10 +19,12 @@ type Subscriber = {
   notify: () => void;
 };
 
-/* Passive, because a non-passive scroll listener holds up the scroll it is
-   watching. */
-const LISTEN: AddEventListenerOptions = { passive: true };
-const UNLISTEN: EventListenerOptions = {};
+/* Capture phase, so an event that does not bubble (`scroll` on an inner
+   element) or whose propagation is stopped still passes through the window on
+   its way down. Passive, because a non-passive scroll listener holds up the
+   scroll it is watching. */
+const LISTEN: AddEventListenerOptions = { capture: true, passive: true };
+const UNLISTEN: EventListenerOptions = { capture: true };
 
 const seen = new Map<string, number>();
 const subscribers = new Set<Subscriber>();
