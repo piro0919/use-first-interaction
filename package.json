@@ -1,6 +1,6 @@
 {
   "name": "use-first-interaction",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A React hook that reports the first time a visitor touches the page, for work that should not run before then",
   "type": "module",
   "sideEffects": false,
