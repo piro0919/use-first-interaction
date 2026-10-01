@@ -42,8 +42,8 @@ importers:
         specifier: ^2.1.14
         version: 2.1.14
       next:
-        specifier: 16.3.2
-        version: 16.3.2(@types/node@22.20.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+        specifier: 16.3.6
+        version: 16.3.6(@types/node@22.20.4)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       publint:
         specifier: ^0.3.24
         version: 0.3.24
@@ -3491,7 +3491,7 @@ snapshots:
 
   validate-npm-package-name@5.0.1: {}
 
-  vite-node@3.2.4(@types/node@22.20.1)(jiti@2.7.0)(lightningcss@1.32.0):
+  vite-node@3.2.4(@types/node@22.20.4)(jiti@2.7.0)(lightningcss@1.32.0):
     dependencies:
       cac: 6.7.14
       debug: 4.4.3
