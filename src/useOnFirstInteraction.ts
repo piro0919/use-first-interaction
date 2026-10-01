@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { FirstInteractionOptions } from "./events";
+import type { OnFirstInteractionOptions } from "./events";
+import { claim } from "./store";
 import { useFirstInteraction } from "./useFirstInteraction";
 
 /**
@@ -12,8 +13,13 @@ import { useFirstInteraction } from "./useFirstInteraction";
  *   const { hotjar } = await import("react-hotjar");
  *
  *   hotjar.initialize({ id, sv });
- * }, { delay: 2500 });
+ * }, { delay: 2500, id: "hotjar" });
  * ```
+ *
+ * A component that mounts after the interaction runs the callback straight
+ * away. Without `id` that is once per mounted component, so a remount runs it
+ * again; with `id` it is once per page load, whichever component gets there
+ * first.
  *
  * The callback is read through a ref, so passing a new function on every render
  * does not run it again. If it rejects — a dynamic import of a third party that
@@ -22,7 +28,7 @@ import { useFirstInteraction } from "./useFirstInteraction";
  */
 export function useOnFirstInteraction(
   callback: () => unknown,
-  options: FirstInteractionOptions = {},
+  { id, ...options }: OnFirstInteractionOptions = {},
 ): boolean {
   const interacted = useFirstInteraction(options);
   const latest = useRef(callback);
@@ -37,6 +43,8 @@ export function useOnFirstInteraction(
 
     done.current = true;
 
+    if (id !== undefined && !claim(id)) return;
+
     try {
       const running = latest.current();
 
@@ -48,7 +56,7 @@ export function useOnFirstInteraction(
     } catch (reason) {
       console.error("useOnFirstInteraction: the callback threw", reason);
     }
-  }, [interacted]);
+  }, [id, interacted]);
 
   return interacted;
 }

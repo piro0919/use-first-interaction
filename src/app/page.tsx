@@ -14,7 +14,7 @@ useOnFirstInteraction(async () => {
   const { hotjar } = await import("react-hotjar");
 
   hotjar.initialize({ id, sv });
-}, { delay: 2500 });`;
+}, { delay: 2500, id: "hotjar" });`;
 
 const OPTIONS = [
   {

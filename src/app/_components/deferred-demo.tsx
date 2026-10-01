@@ -22,8 +22,9 @@ function ms(value: number): string {
  * import that has not been fetched yet, and the numbers are `performance.now()`
  * either side of the interaction that fetches it.
  *
- * Everything that watches for the interaction lives in `Probe`, so arming it
- * again is a remount rather than a pile of state to put back.
+ * The first interaction is recorded once per page, so a remount would load the
+ * chunk straight away. Arming it again therefore reloads the page, carrying the
+ * chosen delay in the query string.
  */
 function Probe({ delay }: { delay: number }) {
   const [loaded, setLoaded] = useState<null | Loaded>(null);
@@ -102,10 +103,20 @@ function Probe({ delay }: { delay: number }) {
   );
 }
 
+function rearm(delay: number): void {
+  window.location.search = `?delay=${delay}`;
+}
+
 export default function DeferredDemo() {
-  const [delay, setDelay] = useState(0);
-  const [armed, setArmed] = useState(0);
-  const rearm = useCallback(() => setArmed((count) => count + 1), []);
+  const [delay, setDelay] = useState<null | number>(null);
+
+  useEffect(() => {
+    const asked = Number(
+      new URLSearchParams(window.location.search).get("delay"),
+    );
+
+    setDelay(DELAYS.includes(asked) ? asked : 0);
+  }, []);
 
   return (
     <div className="rounded-2xl border border-rose-900/40 bg-[#150f11]">
@@ -121,10 +132,7 @@ export default function DeferredDemo() {
                 : "border border-white/10 text-zinc-400 hover:text-zinc-200"
             }`}
             key={candidate}
-            onClick={() => {
-              setDelay(candidate);
-              rearm();
-            }}
+            onClick={() => rearm(candidate)}
             type="button"
           >
             {candidate} ms
@@ -132,7 +140,7 @@ export default function DeferredDemo() {
         ))}
         <button
           className="ml-auto rounded-lg border border-white/10 px-3 py-1 font-mono text-sm text-zinc-400 hover:text-zinc-200"
-          onClick={rearm}
+          onClick={() => rearm(delay ?? 0)}
           type="button"
         >
           arm it again
@@ -140,7 +148,7 @@ export default function DeferredDemo() {
       </div>
 
       <div className="px-5 py-8">
-        <Probe delay={delay} key={armed} />
+        {delay === null ? null : <Probe delay={delay} />}
       </div>
     </div>
   );

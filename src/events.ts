@@ -25,9 +25,18 @@ export type FirstInteractionOptions = {
   /** Report nothing at all. For turning the deferred work off in development. */
   disabled?: boolean;
   /**
-   * Report the interaction after this many milliseconds even if none happened.
-   * Off by default: a visitor who leaves without touching anything is exactly
-   * the one you did not want to load for.
+   * Report the interaction after this many milliseconds even if none happened,
+   * counted from the start of the page (`performance.now()`), so remounting or
+   * changing options does not restart it. Off by default: a visitor who leaves
+   * without touching anything is exactly the one you did not want to load for.
    */
   timeout?: number;
+};
+
+export type OnFirstInteractionOptions = FirstInteractionOptions & {
+  /**
+   * Run at most once per page load under this name, however many times the
+   * component mounts. Without it the callback runs once per mounted component.
+   */
+  id?: string;
 };

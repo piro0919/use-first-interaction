@@ -1,7 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { DEFAULT_EVENTS, type FirstInteractionOptions } from "./events";
+import { seenAt, subscribe } from "./store";
+
+const NOTHING_ON_THE_SERVER = (): null => null;
 
 /**
  * `false` until the visitor first touches the page, then `true` for good.
@@ -12,6 +21,9 @@ import { DEFAULT_EVENTS, type FirstInteractionOptions } from "./events";
  * return interacted ? <Analytics /> : null;
  * ```
  *
+ * The interaction is recorded once for the whole page, so a component that
+ * mounts after it — or mounts again — does not wait for another one.
+ *
  * It is `false` on the server and on the first client render, so it never
  * changes what hydration compares.
  */
@@ -21,60 +33,56 @@ export function useFirstInteraction({
   events = DEFAULT_EVENTS,
   timeout,
 }: FirstInteractionOptions = {}): boolean {
-  const [interacted, setInteracted] = useState(false);
   /* The event list is usually a fresh array on every render. Comparing its
-     contents keeps that from tearing the listeners down and putting them back
-     each time — which would drop an interaction that lands in between. */
-  const key = events.join(",");
+     contents keeps that from unsubscribing and subscribing again each time. */
+  const key = disabled ? "" : events.join(",");
+  const names = useMemo(() => (key === "" ? [] : key.split(",")), [key]);
+  const listen = useCallback(
+    (notify: () => void) => subscribe(names, notify),
+    [names],
+  );
+  const read = useCallback(() => seenAt(names), [names]);
+  const interactedAt = useSyncExternalStore(
+    listen,
+    read,
+    NOTHING_ON_THE_SERVER,
+  );
+
+  /* Both deadlines are absolute `performance.now()` times: the interaction is
+     kept by the shared record, and `timeout` counts from the page's start. A
+     change of options or a remount works out the same deadline again instead
+     of losing a pending delay or restarting the timeout. */
+  let due: null | number = null;
+
+  if (!disabled) {
+    if (interactedAt !== null) due = interactedAt + delay;
+
+    if (timeout !== undefined && (due === null || timeout < due)) {
+      due = timeout;
+    }
+  }
+
+  /* `null` until the first effect, so the first render is `false` everywhere. */
+  const [now, setNow] = useState<null | number>(null);
 
   useEffect(() => {
-    if (disabled || interacted) return;
+    if (due === null) return;
 
-    let settle: null | ReturnType<typeof setTimeout> = null;
-    let expiry: null | ReturnType<typeof setTimeout> = null;
-    const names = key === "" ? [] : key.split(",");
+    const left = due - performance.now();
 
-    const stop = (): void => {
-      for (const name of names) {
-        window.removeEventListener(name, handle);
-      }
-    };
+    if (left <= 0) {
+      setNow(performance.now());
 
-    function handle(): void {
-      stop();
-
-      if (expiry !== null) clearTimeout(expiry);
-
-      if (delay <= 0) {
-        setInteracted(true);
-
-        return;
-      }
-
-      settle = setTimeout(() => setInteracted(true), delay);
+      return;
     }
 
-    for (const name of names) {
-      /* Passive: none of these listeners calls preventDefault, and a
-         non-passive scroll listener holds up the scroll it is watching. */
-      window.addEventListener(name, handle, { passive: true });
-    }
+    const timer = setTimeout(
+      () => setNow(Math.max(performance.now(), due)),
+      left,
+    );
 
-    if (timeout !== undefined) {
-      expiry = setTimeout(() => {
-        stop();
-        setInteracted(true);
-      }, timeout);
-    }
+    return () => clearTimeout(timer);
+  }, [due]);
 
-    return () => {
-      stop();
-
-      if (settle !== null) clearTimeout(settle);
-
-      if (expiry !== null) clearTimeout(expiry);
-    };
-  }, [delay, disabled, interacted, key, timeout]);
-
-  return interacted;
+  return due !== null && now !== null && now >= due;
 }
