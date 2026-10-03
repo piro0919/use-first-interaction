@@ -44,7 +44,7 @@
   "author": "piro0919 <piro.haniwa@gmail.com> (https://kkweb.io/)",
   "packageManager": "pnpm@11.27.1",
   "engines": {
-    "node": ">=18"
+    "node": ">=18.20.8"
   },
   "scripts": {
     "dev": "next dev",
