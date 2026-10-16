@@ -8,8 +8,9 @@ export const size = { height: 630, width: 1200 };
 
 export const contentType = "image/png";
 
-const TITLE = "Load it when";
-const TITLE_SECOND = "they arrive.";
+const TITLE = "use-first-interaction";
+const DESCRIPTION =
+  "A React hook that reports the first time a visitor touches the page.";
 
 export default async function Image() {
   /* The same Bricolage Grotesque the site uses for headings, cut down to Latin.
@@ -18,90 +19,119 @@ export default async function Image() {
     join(process.cwd(), "assets/BricolageGrotesque-700-subset.ttf"),
   );
 
+  /* Same layout as the other package cards on kkweb.io: name, one line and
+     the domain on the left, what the package does on the right. */
   return new ImageResponse(
     <div
       style={{
-        background: "#120c0e",
+        alignItems: "center",
+        background: "#0b0b0f",
         color: "#ffffff",
         display: "flex",
-        flexDirection: "column",
         height: "100%",
-        justifyContent: "center",
         padding: "0 80px",
         width: "100%",
       }}
     >
       <div
         style={{
-          color: "#fb7185",
           display: "flex",
-          fontSize: 26,
-          letterSpacing: 4,
+          flexDirection: "column",
+          justifyContent: "center",
+          width: 600,
         }}
       >
-        USE-FIRST-INTERACTION
-      </div>
-      <div style={{ display: "flex", fontSize: 72, marginTop: 24 }}>
-        {TITLE}
-      </div>
-      <div style={{ color: "#a1a1aa", display: "flex", fontSize: 72 }}>
-        {TITLE_SECOND}
+        <div style={{ display: "flex", fontSize: 54, letterSpacing: -1 }}>
+          {TITLE}
+        </div>
+        <div
+          style={{
+            color: "#a1a1aa",
+            display: "flex",
+            fontSize: 30,
+            lineHeight: 1.4,
+            marginTop: 28,
+          }}
+        >
+          {DESCRIPTION}
+        </div>
+        <div
+          style={{
+            color: "#71717a",
+            display: "flex",
+            fontSize: 26,
+            marginTop: 48,
+          }}
+        >
+          kkweb.io
+        </div>
       </div>
 
       {/* The visit, drawn along its own timeline: nothing fetched until the
           moment someone touches the page. */}
       <div
         style={{
+          alignItems: "center",
           display: "flex",
-          flexDirection: "column",
-          marginTop: 62,
-          width: "100%",
+          flex: 1,
+          justifyContent: "flex-end",
         }}
       >
-        <div style={{ alignItems: "center", display: "flex" }}>
-          <div
-            style={{
-              background: "#3f2b31",
-              borderRadius: 999,
-              display: "flex",
-              height: 10,
-              width: 620,
-            }}
-          />
-          <div
-            style={{
-              background: "#fb7185",
-              borderRadius: 999,
-              display: "flex",
-              height: 30,
-              marginLeft: -4,
-              width: 30,
-            }}
-          />
-          <div
-            style={{
-              background: "#fb7185",
-              borderRadius: 999,
-              display: "flex",
-              height: 10,
-              width: 320,
-            }}
-          />
-        </div>
         <div
           style={{
-            color: "#71717a",
+            background: "#15151c",
+            border: "1px solid #26262f",
+            borderRadius: 20,
             display: "flex",
-            fontSize: 24,
-            marginTop: 22,
+            flexDirection: "column",
+            padding: 28,
           }}
         >
-          <span style={{ display: "flex", width: 620 }}>
-            nothing fetched yet
-          </span>
-          <span style={{ color: "#fb7185", display: "flex" }}>
-            first interaction — now load it
-          </span>
+          <div style={{ alignItems: "center", display: "flex" }}>
+            <div
+              style={{
+                background: "#3f2b31",
+                borderRadius: 999,
+                display: "flex",
+                height: 10,
+                width: 210,
+              }}
+            />
+            <div
+              style={{
+                background: "#fb7185",
+                borderRadius: 999,
+                display: "flex",
+                height: 28,
+                marginLeft: -4,
+                width: 28,
+              }}
+            />
+            <div
+              style={{
+                background: "#fb7185",
+                borderRadius: 999,
+                display: "flex",
+                height: 10,
+                width: 120,
+              }}
+            />
+          </div>
+          <div
+            style={{
+              color: "#71717a",
+              display: "flex",
+              fontSize: 20,
+              marginTop: 20,
+            }}
+          >
+            <span style={{ display: "flex", width: 210 }}>
+              nothing fetched yet
+            </span>
+            <span style={{ color: "#fb7185", display: "flex" }}>
+              now load it
+            </span>
+          </div>
         </div>
       </div>
     </div>,
