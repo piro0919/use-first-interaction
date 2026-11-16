@@ -36,12 +36,12 @@ The interaction is recorded once for the whole page and shared by every hook.
 A component that mounts after it — on another route, or mounted again — turns
 `true` straight after its first render instead of waiting for another one.
 
-| Option | Default | |
-| ---- | ---- | ---- |
-| `delay` | `0` | wait this many milliseconds after the interaction before reporting it |
-| `events` | the five above | what to listen for |
-| `timeout` | — | report the interaction anyway after this long |
-| `disabled` | `false` | report nothing at all |
+| Option     | Default        |                                                                       |
+| ---------- | -------------- | --------------------------------------------------------------------- |
+| `delay`    | `0`            | wait this many milliseconds after the interaction before reporting it |
+| `events`   | the five above | what to listen for                                                    |
+| `timeout`  | —              | report the interaction anyway after this long                         |
+| `disabled` | `false`        | report nothing at all                                                 |
 
 **`delay`.** The interaction itself is the frame the visitor cares most about,
 and the one moment not to spend on a third party. Two or three seconds after it
@@ -79,11 +79,14 @@ Runs the callback once the interaction is reported, and returns the same
 boolean. It takes the options above, plus `id`.
 
 ```tsx
-useOnFirstInteraction(async () => {
-  const { hotjar } = await import("react-hotjar");
+useOnFirstInteraction(
+  async () => {
+    const { hotjar } = await import("react-hotjar");
 
-  hotjar.initialize({ id, sv });
-}, { delay: 2500, id: "hotjar" });
+    hotjar.initialize({ id, sv });
+  },
+  { delay: 2500, id: "hotjar" },
+);
 ```
 
 A component that mounts after the interaction runs the callback straight away.
